@@ -1,0 +1,1 @@
+The quantized LLAMA-2 7B model used by llama-cpp is stored in this directory
