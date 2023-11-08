@@ -1,0 +1,8 @@
+setuptools~=68.0.0
+langchain~=0.0.324
+pandas~=2.1.2
+streamlit~=1.28.0
+numpy~=1.26.1
+deeplake~=3.8.3
+llama-cpp-python~=0.2.11
+requests~=2.31.0
