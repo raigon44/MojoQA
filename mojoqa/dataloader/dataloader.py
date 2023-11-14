@@ -1,9 +1,13 @@
-import pandas as pd
+import json
+
 import requests
 from mojoqa.config.config import CFGLog
 from mojoqa.utils.config import Config
 from bs4 import BeautifulSoup
 from langchain.document_loaders import UnstructuredURLLoader
+from langchain.schema import Document
+from mojoqa.utils.logger import logger
+import os
 
 
 class DataLoader:
@@ -22,11 +26,13 @@ class DataLoader:
 
     @staticmethod
     def get_html_page_data(url):
-        response = requests.get(url)
-        if response.status_code == 200:
+        try:
+            response = requests.get(url)
+            response.raise_for_status()
             return response.text
-        else:
-            return -1
+        except requests.exceptions.HTTPError as e:
+            logger.error(f"Error while accessing the url {url}. Return code {e.response.status_code}")
+            raise
 
     def get_relevant_links(self, sub_page_page_url, base_url):
         html_data = self.get_html_page_data(sub_page_page_url)
@@ -65,24 +71,48 @@ class DataLoader:
 
         return link_dict
 
+    def save_docs_to_json(self, array_of_docs):
+        with open(self.data_config.mojo_docs_dataset_path, 'w') as json_fp:
+            for doc in array_of_docs:
+                json_fp.write(doc.json() + '\n')
+
+    def load_docs_from_json(self):
+        array_of_docs = []
+        with open(self.data_config.mojo_docs_dataset_path, 'r') as json_fp:
+            for line in json_fp:
+                data = json.loads(line)
+                obj = Document(**data)
+                array_of_docs.append(obj)
+        return array_of_docs
+
     def create_mojo_docs_dataset(self, home_page_url: str, base_url: str):
+        logger.info("Creating Mojo Docs dataset by scrapping from the official Mojo documentation page")
         relevant_links_dict = self.get_sub_page_links(home_page_url, base_url)
 
         url_loader = UnstructuredURLLoader(urls=list(relevant_links_dict.keys()))
         html_doc = url_loader.load()
 
-        html_page_data = [doc.page_content for doc in html_doc]
-        src = [doc.metadata['source'] for doc in html_doc]
+        if html_doc:
+            logger.info("Mojo documents scrapped successfully!!")
 
-        mojo_docs_data = {
-            'id': list(range(len(html_page_data))),
-            'page_content': html_page_data,
-            'src': src
-        }
+        logger.info("Try to save the scrapped documents locally as a JSON file..")
+        self.save_docs_to_json(html_doc)
 
-        mojo_docs_data_frame = pd.DataFrame(mojo_docs_data)
+        if os.path.isfile(self.data_config.mojo_docs_dataset_path):
+            logger.info(f"Saved the dataset as JSON file successfully at {self.data_config.mojo_docs_dataset_path}")
 
-        return mojo_docs_data_frame
+        return html_doc
+
+    def load_mojo_docs_dataset(self):
+
+        logger.info(f"Checking if the dataset is locally available at {self.data_config.mojo_docs_dataset_path}")
+        if os.path.isfile(self.data_config.mojo_docs_dataset_path):
+            logger.info(f"Data file is locally available at {self.data_config.mojo_docs_dataset_path}. Loading the dataset...")
+            return self.load_docs_from_json()
+        else:
+            logger.info(f"Mojo Docs not available locally at {self.data_config.mojo_docs_dataset_path}")
+            return self.create_mojo_docs_dataset(self.data_config.mojo_documentation_home_url,
+                                                 self.data_config.mojo_documentation_base_url)
 
 
 if __name__ == "__main__":

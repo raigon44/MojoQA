@@ -6,12 +6,10 @@ then the paths here need to be checked and modified accordingly"""
 
 CFGLog = {
     "data": {
-        "extracted_html_files_path": "./data/extractedData/",
-        "raw_html_files_path": "./data/raw_data/",
-        "preprocessed_data_path": "./data/preprocessed_data/",
+        "mojo_docs_dataset_path": "./data/mojo_docs_frame.json",
         "vector_store_dataset_path": "./data/db",
-        "title_summary_csv_file": "./data/summaries/title_frame.csv",
-        "mojo_documentation_base_url": "https://docs.modular.com/mojo/"
+        "mojo_documentation_home_url": "https://docs.modular.com/mojo/",
+        "mojo_documentation_base_url": "https://docs.modular.com/"
     },
     "llama_embedding_model": {
             "model_path": "./models/llama-2-7b.Q4_K_S.gguf",
@@ -21,5 +19,14 @@ CFGLog = {
     "document_splitter": {
         "chunk_size": 1000,
         "chunk_overlap": 15,
-    }
+    },
+    "llama_model": {
+        "model_path": "./models/llama-2-7b.Q4_K_S.gguf",
+        "n_gpu_layers": 32,
+        "n_ctx": 1024,
+        "max_token": 250,
+        "temperature": 0.7,
+        "top_k": 40,
+        "top_p": 0.1,
+    },
 }
