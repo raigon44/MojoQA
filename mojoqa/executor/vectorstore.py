@@ -4,15 +4,10 @@ VectorStore Class
 This class is responsible for creating a vector store of document chunks using the LangChain library.
 """
 
-from langchain.document_loaders import TextLoader
 from langchain.embeddings import LlamaCppEmbeddings
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain.vectorstores.deeplake import DeepLake
-from mojoqa.config.config import CFGLog
-from langchain.llms import LlamaCpp
 from mojoqa.utils.logger import logger
-
-from mojoqa.utils.config import Config
 from mojoqa.dataloader.dataloader import DataLoader
 
 
@@ -28,11 +23,11 @@ class VectorStore:
         Args:
             cfg: Configuration object for the project.
         """
-        self.config = Config.from_json(cfg)
-        self.data_loader = DataLoader(self.config.data)
-        self.embedding_function = LlamaCppEmbeddings(model_path=self.config.llama_embedding_model.model_path,
-                                                     n_gpu_layers=self.config.llama_embedding_model.n_gpu_layers,
-                                                     n_ctx=self.config.llama_embedding_model.n_ctx)
+        self.config = cfg
+        self.data_loader = DataLoader(self.config)
+        self.embedding_function = LlamaCppEmbeddings(model_path=self.config.model_params.llama_embedding_model.model_path,
+                                                     n_gpu_layers=self.config.model_params.llama_embedding_model.n_gpu_layers,
+                                                     n_ctx=self.config.model_params.llama_embedding_model.n_ctx)
         self.text_splitter = RecursiveCharacterTextSplitter(chunk_size=self.config.document_splitter.chunk_size,
                                                             chunk_overlap=self.config.document_splitter.chunk_overlap)
 
@@ -68,11 +63,7 @@ class VectorStore:
         """
         documents = self.create_documents()
         db = DeepLake.from_documents(documents, self.embedding_function,
-                                     dataset_path=self.config.data.vector_store_dataset_path, overwrite=True)
+                                     dataset_path=self.config.path.vector_store_path, overwrite=True)
         return db
 
-
-if __name__ == '__main__':
-    vector_db_obj = VectorStore(CFGLog)
-    doc_list = vector_db_obj.create_vector_store()
 

@@ -1,8 +1,6 @@
 import json
 
 import requests
-from mojoqa.config.config import CFGLog
-from mojoqa.utils.config import Config
 from bs4 import BeautifulSoup
 from langchain.document_loaders import UnstructuredURLLoader
 from langchain.schema import Document
@@ -15,14 +13,14 @@ class DataLoader:
     DataLoader class for loading and preprocessing data from Mojo documentation.
     """
 
-    def __init__(self, data_config):
+    def __init__(self, config):
         """
         Initializes the DataLoader with a data configuration.
 
         Args:
-            data_config: Configuration object containing data paths.
+            config: Configuration object containing data paths & other congigurations.
         """
-        self.data_config = data_config
+        self.config = config
 
     @staticmethod
     def get_html_page_data(url):
@@ -72,13 +70,13 @@ class DataLoader:
         return link_dict
 
     def save_docs_to_json(self, array_of_docs):
-        with open(self.data_config.mojo_docs_dataset_path, 'w') as json_fp:
+        with open(self.config.path.mojo_docs_dataset_path, 'w') as json_fp:
             for doc in array_of_docs:
                 json_fp.write(doc.json() + '\n')
 
     def load_docs_from_json(self):
         array_of_docs = []
-        with open(self.data_config.mojo_docs_dataset_path, 'r') as json_fp:
+        with open(self.config.path.mojo_docs_dataset_path, 'r') as json_fp:
             for line in json_fp:
                 data = json.loads(line)
                 obj = Document(**data)
@@ -98,27 +96,19 @@ class DataLoader:
         logger.info("Try to save the scrapped documents locally as a JSON file..")
         self.save_docs_to_json(html_doc)
 
-        if os.path.isfile(self.data_config.mojo_docs_dataset_path):
-            logger.info(f"Saved the dataset as JSON file successfully at {self.data_config.mojo_docs_dataset_path}")
+        if os.path.isfile(self.config.path.mojo_docs_dataset_path):
+            logger.info(f"Saved the dataset as JSON file successfully at {self.config.path.mojo_docs_dataset_path}")
 
         return html_doc
 
     def load_mojo_docs_dataset(self):
 
-        logger.info(f"Checking if the dataset is locally available at {self.data_config.mojo_docs_dataset_path}")
-        if os.path.isfile(self.data_config.mojo_docs_dataset_path):
-            logger.info(f"Data file is locally available at {self.data_config.mojo_docs_dataset_path}. Loading the dataset...")
+        logger.info(f"Checking if the dataset is locally available at {self.config.path.mojo_docs_dataset_path}")
+        if os.path.isfile(self.config.path.mojo_docs_dataset_path):
+            logger.info(f"Data file is locally available at {self.config.path.mojo_docs_dataset_path}. Loading the dataset...")
             return self.load_docs_from_json()
         else:
-            logger.info(f"Mojo Docs not available locally at {self.data_config.mojo_docs_dataset_path}")
-            return self.create_mojo_docs_dataset(self.data_config.mojo_documentation_home_url,
-                                                 self.data_config.mojo_documentation_base_url)
+            logger.info(f"Mojo Docs not available locally at {self.config.path.mojo_docs_dataset_path}")
+            return self.create_mojo_docs_dataset(self.config.url.mojo_documentation_home_url,
+                                                 self.config.url.mojo_documentation_base_url)
 
-
-if __name__ == "__main__":
-    config = Config.from_json(CFGLog)
-    data_obj = DataLoader(config.data)
-    data_frame = data_obj.create_mojo_docs_dataset(
-        'https://docs.modular.com/mojo/', 'https://docs.modular.com/')
-    print(len(data_frame))
-    data_frame.to_csv('data.csv')

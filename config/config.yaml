@@ -1,0 +1,28 @@
+path:
+  mojo_docs_dataset_path: ./data/mojo_docs_frame.json
+  vector_store_path: ./data/db
+  log: ./log
+
+url:
+  mojo_documentation_home_url: "https://docs.modular.com/mojo/"
+  mojo_documentation_base_url: "https://docs.modular.com/"
+
+model_params:
+  llama_embedding_model:
+    model_path: "./models/llama-2-7b.Q4_K_S.gguf"
+    n_gpu_layers: 32
+    n_ctx: 1024
+  llama_model:
+    model_path: "./models/llama-2-7b.Q4_K_S.gguf"
+    n_gpu_layers: 32
+    n_ctx: 1024
+    max_token: 250
+    temperature: 0
+    top_k: 40
+    top_p: 0.1
+
+document_splitter:
+  chunk_size: 1000
+  chunk_overlap: 15
+
+
