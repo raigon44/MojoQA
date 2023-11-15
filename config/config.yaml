@@ -1,7 +1,7 @@
 path:
-  mojo_docs_dataset_path: ./data/mojo_docs_frame.json
-  vector_store_path: ./data/db
-  log: ./log
+  mojo_docs_dataset_path: ${hydra:runtime.cwd}./data/mojo_docs_frame.json
+  vector_store_path: ${hydra:runtime.cwd}./data/db2
+  log: ${hydra:runtime.cwd}./log
 
 url:
   mojo_documentation_home_url: "https://docs.modular.com/mojo/"
@@ -9,11 +9,11 @@ url:
 
 model_params:
   llama_embedding_model:
-    model_path: "./models/llama-2-7b.Q4_K_S.gguf"
+    model_path: ${hydra:runtime.cwd}./models/llama-2-7b.Q4_K_S.gguf
     n_gpu_layers: 32
     n_ctx: 1024
   llama_model:
-    model_path: "./models/llama-2-7b.Q4_K_S.gguf"
+    model_path: ${hydra:runtime.cwd}./models/llama-2-7b.Q4_K_S.gguf
     n_gpu_layers: 32
     n_ctx: 1024
     max_token: 250
