@@ -69,14 +69,16 @@ class DataLoader:
 
         return link_dict
 
-    def save_docs_to_json(self, array_of_docs):
-        with open(self.config.path.mojo_docs_dataset_path, 'w') as json_fp:
+    @staticmethod
+    def save_docs_to_json(array_of_docs, path):
+        with open(path, 'w') as json_fp:
             for doc in array_of_docs:
                 json_fp.write(doc.json() + '\n')
 
-    def load_docs_from_json(self):
+    @staticmethod
+    def load_docs_from_json(path):
         array_of_docs = []
-        with open(self.config.path.mojo_docs_dataset_path, 'r') as json_fp:
+        with open(path, 'r') as json_fp:
             for line in json_fp:
                 data = json.loads(line)
                 obj = Document(**data)
@@ -94,21 +96,48 @@ class DataLoader:
             logger.info("Mojo documents scrapped successfully!!")
 
         logger.info("Try to save the scrapped documents locally as a JSON file..")
-        self.save_docs_to_json(html_doc)
+        self.save_docs_to_json(html_doc, self.config.path.mojo_docs_dataset_path)
 
         if os.path.isfile(self.config.path.mojo_docs_dataset_path):
             logger.info(f"Saved the dataset as JSON file successfully at {self.config.path.mojo_docs_dataset_path}")
 
         return html_doc
 
-    def load_mojo_docs_dataset(self):
+    def create_mojo_docs_short_dataset(self, list_of_urls: list):
+        logger.info(
+            "Creating Mojo Docs dataset by scrapping only a few html pages from official mojo documentation page")
 
-        logger.info(f"Checking if the dataset is locally available at {self.config.path.mojo_docs_dataset_path}")
-        if os.path.isfile(self.config.path.mojo_docs_dataset_path):
-            logger.info(f"Data file is locally available at {self.config.path.mojo_docs_dataset_path}. Loading the dataset...")
-            return self.load_docs_from_json()
+        url_loader = UnstructuredURLLoader(urls=list_of_urls)
+        html_doc = url_loader.load()
+
+        if html_doc:
+            logger.info("Mojo documents scrapped successfully!!")
+
+        logger.info("Try to save the scrapped documents locally as a JSON file..")
+        self.save_docs_to_json(html_doc, self.config.path.mojo_docs_short_dataset_path)
+
+        if os.path.isfile(self.config.path.mojo_docs_short_dataset_path):
+            logger.info(
+                f"Saved the dataset as JSON file successfully at {self.config.path.mojo_docs_short_dataset_path}")
+
+        return html_doc
+
+    def load_mojo_docs_dataset(self, dataset_variant: str):
+
+        if dataset_variant == 'short':
+            dataset_path = self.config.path.mojo_docs_short_dataset_path
         else:
-            logger.info(f"Mojo Docs not available locally at {self.config.path.mojo_docs_dataset_path}")
-            return self.create_mojo_docs_dataset(self.config.url.mojo_documentation_home_url,
-                                                 self.config.url.mojo_documentation_base_url)
-
+            dataset_path = self.config.path.mojo_docs_dataset_path
+        logger.info(f"Checking if the dataset is locally available at {dataset_path}")
+        if os.path.isfile(dataset_path):
+            logger.info(f"Data file is locally available at {dataset_path}. Loading the dataset...")
+            return self.load_docs_from_json(dataset_path)
+        else:
+            logger.info(f"Mojo Docs not available locally at {dataset_path}")
+            if dataset_variant == 'short':
+                return self.create_mojo_docs_short_dataset(
+                    [self.config.url.mojo_docs_why_mojo, self.config.url.mojo_docs_faq,
+                     self.config.url.mojo_docs_getting_started, self.config.url.mojo_docs_roadmap])
+            else:
+                return self.create_mojo_docs_dataset(self.config.url.mojo_documentation_home_url,
+                                                     self.config.url.mojo_documentation_base_url)

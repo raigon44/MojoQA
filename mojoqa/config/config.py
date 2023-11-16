@@ -4,6 +4,7 @@ from dataclasses import dataclass
 @dataclass
 class Path:
     mojo_docs_dataset_path: str
+    mojo_docs_short_dataset_path: str
     vector_store_path: str
     log: str
 
@@ -12,6 +13,10 @@ class Path:
 class Url:
     mojo_documentation_home_url: str
     mojo_documentation_base_url: str
+    mojo_docs_why_mojo: str
+    mojo_docs_faq: str
+    mojo_docs_getting_started: str
+    mojo_docs_roadmap: str
 
 
 @dataclass
@@ -26,7 +31,7 @@ class LlamaModel:
     model_path: str
     n_gpu_layers: int
     n_ctx: int
-    max_token: int
+    # max_token: int
     temperature: float
     top_k: int
     top_p: float

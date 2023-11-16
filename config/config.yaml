@@ -1,11 +1,16 @@
 path:
   mojo_docs_dataset_path: ${hydra:runtime.cwd}./data/mojo_docs_frame.json
+  mojo_docs_short_dataset_path: ${hydra:runtime.cwd}./data/mojo_docs_short_frame.json
   vector_store_path: ${hydra:runtime.cwd}./data/db2
   log: ${hydra:runtime.cwd}./log
 
 url:
   mojo_documentation_home_url: "https://docs.modular.com/mojo/"
   mojo_documentation_base_url: "https://docs.modular.com/"
+  mojo_docs_why_mojo: "https://docs.modular.com/mojo/why-mojo.html"
+  mojo_docs_faq: "https://docs.modular.com/mojo/faq.html"
+  mojo_docs_getting_started: "https://docs.modular.com/mojo/manual/get-started/"
+  mojo_docs_roadmap: "https://docs.modular.com/mojo/roadmap.html"
 
 model_params:
   llama_embedding_model:
@@ -15,8 +20,7 @@ model_params:
   llama_model:
     model_path: ${hydra:runtime.cwd}./models/llama-2-7b.Q4_K_S.gguf
     n_gpu_layers: 32
-    n_ctx: 1024
-    max_token: 250
+    n_ctx: 4096
     temperature: 0
     top_k: 40
     top_p: 0.1

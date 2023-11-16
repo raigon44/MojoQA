@@ -31,7 +31,7 @@ class VectorStore:
         self.text_splitter = RecursiveCharacterTextSplitter(chunk_size=self.config.document_splitter.chunk_size,
                                                             chunk_overlap=self.config.document_splitter.chunk_overlap)
 
-    def create_documents(self) -> list:
+    def create_documents(self, dataset_variant: str) -> list:
         """
         Creates a list of document objects from preprocessed text documents.
         Retrieves paper titles, preprocesses documents, and splits them into chunks.
@@ -40,7 +40,7 @@ class VectorStore:
         """
         document_obj_list = []
         logger.info("Loading the Mojo Documentation frame")
-        array_of_documents = self.data_loader.load_mojo_docs_dataset()
+        array_of_documents = self.data_loader.load_mojo_docs_dataset(dataset_variant)
         array_of_documents = [[doc] for doc in array_of_documents]
         doc_count = 0
         for doc in array_of_documents:
@@ -48,20 +48,21 @@ class VectorStore:
 
             for doc_chunk in document_chunks:
                 doc_chunk.metadata['id'] = doc_count
+                doc_chunk.metadata['text'] = doc_chunk.page_content
 
             document_obj_list.extend(document_chunks)
             doc_count += 1
 
         return document_obj_list
 
-    def create_vector_store(self):
+    def create_vector_store(self, dataset_variant: str):
         """
         Creates a vector store from the generated document chunks.
         Uses DeepLake to generate a vector store with Llama embeddings.
         Returns:
             Object to access the created vector store.
         """
-        documents = self.create_documents()
+        documents = self.create_documents(dataset_variant)
         db = DeepLake.from_documents(documents, self.embedding_function,
                                      dataset_path=self.config.path.vector_store_path, overwrite=True)
         return db
