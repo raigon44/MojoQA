@@ -1,1 +1,1 @@
-print('imported research assistant package')
+print('imported mojo QA package')
