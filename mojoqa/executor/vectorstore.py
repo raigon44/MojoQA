@@ -35,6 +35,8 @@ class VectorStore:
         """
         Creates a list of document objects from preprocessed text documents.
         Retrieves paper titles, preprocesses documents, and splits them into chunks.
+        Args:
+            dataset_variant: to decide whether to use the whole mojo documentation or just the 4 main doc pages
         Returns:
             list: List of document objects.
         """
@@ -59,12 +61,16 @@ class VectorStore:
         """
         Creates a vector store from the generated document chunks.
         Uses DeepLake to generate a vector store with Llama embeddings.
+        Args:
+            dataset_variant: to decide whether to use the whole mojo documentation or just the 4 main doc pages
         Returns:
             Object to access the created vector store.
         """
+        logger.info("Inside the create vector store function")
         documents = self.create_documents(dataset_variant)
         db = DeepLake.from_documents(documents, self.embedding_function,
                                      dataset_path=self.config.path.vector_store_path, overwrite=True)
+        logger.info("Vector store created!!")
         return db
 
 

@@ -1,6 +1,5 @@
 from dataclasses import dataclass
 
-
 @dataclass
 class Path:
     mojo_docs_dataset_path: str
@@ -55,6 +54,7 @@ class MojoQAConfig:
     url: Url
     model_params: ModelParams
     document_splitter: DocumentSplitter
+
 
 
 

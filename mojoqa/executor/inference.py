@@ -5,9 +5,9 @@ from langchain.embeddings import LlamaCppEmbeddings
 from langchain.vectorstores import DeepLake
 from langchain.llms.llamacpp import LlamaCpp
 from langchain.prompts import ChatPromptTemplate
-from langchain.chains import RetrievalQA
-from langchain.schema.runnable import RunnableLambda, RunnablePassthrough
+from langchain.schema.runnable import RunnablePassthrough
 from langchain.schema.output_parser import StrOutputParser
+from mojoqa.utils.config import Config
 
 
 class Inference:
@@ -22,18 +22,18 @@ class Inference:
         Args:
             cfg: Configuration object for the project.
         """
-        self.config = cfg
+        self.config = Config.from_json(cfg)
         self.embedding_function = LlamaCppEmbeddings(
-            model_path=self.config.model_params.llama_embedding_model.model_path,
-            n_gpu_layers=self.config.model_params.llama_embedding_model.n_gpu_layers,
-            n_ctx=self.config.model_params.llama_embedding_model.n_ctx)
+            model_path=self.config.llama_embedding_model.model_path,
+            n_gpu_layers=self.config.llama_embedding_model.n_gpu_layers,
+            n_ctx=self.config.llama_embedding_model.n_ctx)
         self.vector_database_obj = DeepLake(dataset_path=self.config.path.vector_store_path,
                                             read_only=True,
                                             embedding=self.embedding_function)
-        self.llama_model = LlamaCpp(model_path=self.config.model_params.llama_model.model_path,
-                                    n_gpu_layers=self.config.model_params.llama_model.n_gpu_layers,
-                                    n_ctx=self.config.model_params.llama_model.n_ctx,
-                                    temperature=self.config.model_params.llama_model.temperature)
+        self.llama_model = LlamaCpp(model_path=self.config.llama_model.model_path,
+                                    n_gpu_layers=self.config.llama_model.n_gpu_layers,
+                                    n_ctx=self.config.llama_model.n_ctx,
+                                    temperature=self.config.llama_model.temperature)
         self.template = """Answer the question based only on the following context:
         {context}
 
@@ -46,8 +46,10 @@ class Inference:
         """
         This function takes as input the query and uses the RAG chain to generate the answer.
         Generated answer is returned.
-        :param input_query:
-        :return:
+        Args:
+            input_query (str): the input query from the user
+        Returns:
+            Response generated from the LLM
         """
 
         prompt = ChatPromptTemplate.from_template(self.template)

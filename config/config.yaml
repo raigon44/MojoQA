@@ -1,7 +1,7 @@
 path:
   mojo_docs_dataset_path: ${hydra:runtime.cwd}./data/mojo_docs_frame.json
   mojo_docs_short_dataset_path: ${hydra:runtime.cwd}./data/mojo_docs_short_frame.json
-  vector_store_path: ${hydra:runtime.cwd}./data/db2
+  vector_store_path: ${hydra:runtime.cwd}./data/db
   log: ${hydra:runtime.cwd}./log
 
 url:
