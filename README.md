@@ -20,9 +20,44 @@ corresponding embeddings. To answer each query, we retrieve the most similar emb
 Checkout the high level overview diagram below.
 ### High level overview
 
+![mojoqa.svg](mojo_qa_highlevel.svg)
 
 ### How to reproduce?
 
-### MojoQA Bot in action
+#### Install dependencies
 
-### 
+```shell
+pip install -r requirements.txt
+```
+Please refer this link for the installation instructions of llama-cpp with OpenBLAS/ cuBLAS / CLBlast. The dependency I have added in the requirements.txt file is for CPU only installation.
+
+#### Install the project as a package
+```shell
+pip install -e .
+```
+
+#### Download model and adapt the config.yaml file
+
+For this project I have used 4 but quantized LLAMA-2 model (llama-cpp). For better result
+for the text generation, it is better to use the chat model.
+Kindly download and place the model in the ./models directory of this project. 
+You can use other models too. Please update the model path parameters in config/config.yaml file.
+
+#### Create the vector store
+
+```shell
+python ./scripts/main.py
+```
+
+#### Start the MojoQA Bot
+
+```shell
+streamlit run ./streamlit/app.py
+```
+
+### Next Steps
+
+
+
+
+
