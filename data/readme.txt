@@ -1,0 +1,1 @@
+Data files and files related to the vector store are created here.

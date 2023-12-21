@@ -10,9 +10,10 @@ from mojoqa.config.conf import CFGLog
 def create_vector_store(cfg):
     """
        Initializes a VectorStore object and creates a vector store containing document chunks embeddings.
+       Use the attribute 'short' in the create_vector_store function to create a vector store with the 4 main Mojo programming language document web-pages (only for debugging)
     """
     vector_db_obj = VectorStore(cfg)
-    db = vector_db_obj.create_vector_store('short')
+    db = vector_db_obj.create_vector_store('full')
 
     return
 

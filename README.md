@@ -1,21 +1,23 @@
-## MojoQA - This project is still in progress
+## MojoQA
 
 MojoQA is a RAG (Retrieval Augmented Generation) based LLM application that can answer queries
 related to Mojo programming language.
 
 Introduced this year, [Mojo](https://www.modular.com/max/mojo) is a novel programming language that seamlessly merges the strengths of Python syntax with elements of systems programming and metaprogramming, effectively bridging the divide between research and production.
 
-Let's see what LLAMA-2 knows about it!
+Let's see what a LLAMA-2 7B model knows about the advantages of Mojo over Python!
 
 ![Avery_LLAMA2_response.JPG](Avery_LLAMA2_response.JPG)
 
-As you can see the response is not accurate.
+As you can see the response isn't accurate and not very helpful.
 
 Now let's see how Mojo QA bot performs.
 
 ![mojo_qa_bot_response.JPG](mojo_qa_bot_response.JPG)
 
-For creating Mojo QA Bot, I have extracted the official Mojo documentation and created a vector store containing 
+Now that looks better!!
+
+For creating Mojo QA Bot, I have extracted the official [Mojo documentation](https://docs.modular.com/mojo/) and created a vector store containing 
 corresponding embeddings. To answer each query, we retrieve the most similar embeddings and provide it to the LLM as context.
 Checkout the high level overview diagram below.
 ### High level overview
@@ -38,10 +40,18 @@ pip install -e .
 
 #### Download model and adapt the config.yaml file
 
-For this project I have used 4 but quantized LLAMA-2 model (llama-cpp). For better result
+For this project I have used 4 bit quantized LLAMA-2 7B model (using llama-cpp). For better result
 for the text generation, it is better to use the chat model.
 Kindly download and place the model in the ./models directory of this project. 
-You can use other models too. Please update the model path parameters in config/config.yaml file.
+You can use other models too. 
+
+Models used in this project:
+
+[4 bit quantized LLAMA-2-7B](https://huggingface.co/TheBloke/Llama-2-7B-GGUF/blob/main/llama-2-7b.Q4_K_S.gguf)
+
+[4 bit quantized LLAMA-2-7B-Chat](https://huggingface.co/TheBloke/Llama-2-7B-Chat-GGUF/blob/main/llama-2-7b-chat.Q4_K_S.gguf)
+
+For using different models, please update the model path parameters in *config/config.yaml* file and *mojoqa/config/conf.py* file.
 
 #### Create the vector store
 
